@@ -1,0 +1,43 @@
+[
+  {
+    "id": "unknown_agent_allow",
+    "op": "consult",
+    "input": {
+      "agentId": "0x1111111111111111111111111111111111111111",
+      "seller": "https://signals.edge.report",
+      "sku": "/v1/gas",
+      "amountUsd": 0.001
+    },
+    "expect": {
+      "verdict": "allow",
+      "score": 50,
+      "reasonsIncludes": ["unknown_agent"]
+    }
+  },
+  {
+    "id": "high_amount_caution",
+    "op": "consult",
+    "input": {
+      "agentId": "0x1111111111111111111111111111111111111111",
+      "seller": "https://signals.edge.report",
+      "sku": "/v1/wallet/full",
+      "amountUsd": 11
+    },
+    "expect": {
+      "verdict": "caution",
+      "score": 50,
+      "reasonsIncludes": ["high_amount_low_score"]
+    }
+  },
+  {
+    "id": "after_two_settlements",
+    "op": "consult_after_n_settlements",
+    "n": 2,
+    "agentId": "0x1111111111111111111111111111111111111111",
+    "expect": {
+      "verdict": "allow",
+      "score": 70,
+      "reasonsIncludes": ["history_positive"]
+    }
+  }
+]
