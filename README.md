@@ -48,7 +48,9 @@ Skip pre-pay consult entirely: `withAtl(fetchPaid, url, { …, consult: false })
 
 Do **not** require a remote `POST /consult` before every payment in v0.1. Hosted consult is optional for shared reputation later.
 
-## Live dogfood (Edge Signals)
+## Live
+
+Reference soft seller on Edge Signals (`signals.edge.report`):
 
 - Free: `POST https://signals.edge.report/v1/atl/consult`
 - Soft: `GET /v1/gas` with header `X-ATL-Agent-Id` → `X-ATL-Verdict` / `X-ATL-Score` (does not block 402)
