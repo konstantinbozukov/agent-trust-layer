@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import type { AtlClient } from "@agent-trust-layer/core";
+import type { AtlClient } from "agent-trust-layer";
 
 export type AtlMiddlewareOptions = {
   client: AtlClient;

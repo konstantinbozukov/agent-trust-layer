@@ -28,3 +28,4 @@ export {
   type AtlClient,
   type AtlClientOptions,
 } from "./client.js";
+export { withAtl, type WithAtlOptions, type WithAtlResult } from "./withAtl.js";

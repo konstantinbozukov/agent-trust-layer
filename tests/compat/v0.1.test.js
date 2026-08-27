@@ -9,7 +9,7 @@ import {
   createMemoryLedger,
   ATL_PROTOCOL,
   ATL_VERSION,
-} from "@agent-trust-layer/core";
+} from "agent-trust-layer";
 
 const AGENT_A = "0x1111111111111111111111111111111111111111";
 const AGENT_B = "0x2222222222222222222222222222222222222222";

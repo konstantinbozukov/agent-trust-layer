@@ -1,6 +1,6 @@
 {
-  "name": "agent-trust-layer",
-  "version": "0.1.0",
+  "name": "agent-trust-layer-monorepo",
+  "version": "0.1.1",
   "private": true,
   "description": "Open protocol for agent trust consult before spend — spec, reference core, compat tests",
   "type": "module",
@@ -9,9 +9,10 @@
     "packages/reference-express"
   ],
   "scripts": {
-    "build": "npm run build -w @agent-trust-layer/core && npm run build -w @agent-trust-layer/reference-express",
+    "build": "npm run build -w agent-trust-layer && npm run build -w @agent-trust-layer/reference-express",
     "test": "npm run build && node --test tests/compat/*.test.js",
-    "compat": "npm test"
+    "compat": "npm test",
+    "example:with-atl": "npm run build && node examples/with-atl/index.js"
   },
   "license": "MIT",
   "engines": {

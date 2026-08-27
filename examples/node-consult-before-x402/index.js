@@ -8,7 +8,7 @@
 import {
   createAtlClient,
   createMemoryLedger,
-} from "@agent-trust-layer/core";
+} from "agent-trust-layer";
 
 const AGENT = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const SELLER = "https://signals.edge.report";

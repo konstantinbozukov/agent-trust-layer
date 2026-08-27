@@ -1,62 +1,74 @@
 # Agent Trust Layer (ATL)
 
-**Open protocol** for AI agents: consult trust **before** spend, then record settlements on an append-only ledger.
+**Open protocol** for AI agents: consult trust before spend, record settlements on an append-only ledger.
 
-This repo is the **spec + reference implementation + compatibility tests** — not a hosted product and not a token. Anyone can implement ATL v0.1; if you pass the compat suite, you are ATL-compatible.
+Spec + reference + compat tests. MIT. Anyone can implement ATL v0.1 — pass [`tests/compat`](./tests/compat/) and you are compatible.
 
-> Analogy: HTTP won as a standard with many libraries. ATL aims for the same — own the protocol, not one SDK.
+## Install (builders)
 
-## Spec
+```bash
+npm i agent-trust-layer
+```
 
-- Normative: [`spec/v0.1.md`](./spec/v0.1.md)
-- Compat vectors: [`tests/compat/vectors.v0.1.json`](./tests/compat/vectors.v0.1.json)
+Fallback (git):
 
-## Packages
+```bash
+npm i "github:konstantinbozukov/agent-trust-layer#path:packages/core"
+```
 
-| Package | Role |
-|---------|------|
-| [`@agent-trust-layer/core`](./packages/core) | `consult` + `recordSettlement` + JSONL/memory ledger |
-| [`@agent-trust-layer/reference-express`](./packages/reference-express) | Observational Express middleware |
-
-## 5-line client (consult → pay → record)
+## Five lines (real path)
 
 ```js
-import { createAtlClient, createMemoryLedger } from "@agent-trust-layer/core";
+import { createAtlClient, createJsonlLedger, withAtl } from "agent-trust-layer";
 
-const atl = createAtlClient({ ledger: createMemoryLedger() });
-const c = await atl.consult({
-  agentId: "0xYourAgent",
+const client = createAtlClient({ ledger: createJsonlLedger("./atl-ledger.jsonl") });
+const { body, consult } = await withAtl(fetchPaid, url, {
+  client,
+  agentId: buyerAddress,
   seller: "https://signals.edge.report",
   sku: "/v1/gas",
   amountUsd: 0.001,
-});
-// … settle x402 to the seller …
-await atl.recordSettlement({
-  consultId: c.consultId,
-  agentId: "0xYourAgent",
-  payer: "0xYourAgent",
-  payTo: "0xSellerPayTo",
-  amountUsd: 0.001,
-  txHash: "0x…",
-  sku: "/v1/gas",
-  seller: "https://signals.edge.report",
+  payTo: "0xE2520f1497ee47645072a6214304807BC3340D58",
 });
 ```
 
-Full example: [`examples/node-consult-before-x402`](./examples/node-consult-before-x402).
+- **Consult is in-process** (local ledger) — no extra HTTP hop before pay.
+- **Settlement is async by default** — does not block after pay.
+- **No ATL header ⇒ sellers do nothing** — discovery agents pay as today (zero latency tax).
+
+Skip pre-pay consult entirely: `withAtl(fetchPaid, url, { …, consult: false })` (still records settlement after success).
+
+## Zero-cost path (important)
+
+| Who | What happens |
+|-----|----------------|
+| Agent with no ATL | Calls seller as usual — **no ATL work, no added latency** |
+| Agent using `withAtl` | Local consult (µs–ms) + optional `X-ATL-*` headers; settlement async |
+| Soft seller (Edge Signals) | If header present, attach score; if absent, identical to pre-ATL |
+
+Do **not** require a remote `POST /consult` before every payment in v0.1. Hosted consult is optional for shared reputation later.
+
+## Live dogfood (Edge Signals)
+
+- Free: `POST https://signals.edge.report/v1/atl/consult`
+- Soft: `GET /v1/gas` with header `X-ATL-Agent-Id` → `X-ATL-Verdict` / `X-ATL-Score` (does not block 402)
+- Health: `GET https://signals.edge.report/v1/atl/health`
+
+## Spec & packages
+
+| | |
+|--|--|
+| Spec | [`spec/v0.1.md`](./spec/v0.1.md) |
+| Core | [`packages/core`](./packages/core) — `withAtl`, ledger, policy |
+| Express | [`packages/reference-express`](./packages/reference-express) |
+| Compat | `npm test` |
 
 ## Develop
 
 ```bash
 npm install
-npm test          # build + compat suite
+npm test
 ```
-
-## Design rules (v0.1)
-
-- Spec has **zero lock-in** (local ledger is fine).
-- Middleware is **observational** — does not block x402 payments yet.
-- Hosted reputation / escrow / token = separate product layer (not this repo).
 
 ## License
 

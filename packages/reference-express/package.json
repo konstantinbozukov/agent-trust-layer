@@ -23,7 +23,7 @@
     "express": ">=4"
   },
   "dependencies": {
-    "@agent-trust-layer/core": "0.1.0"
+    "agent-trust-layer": "0.1.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
