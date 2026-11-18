@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import type { AtlClient } from "agent-trust-layer";
+import type { AtlClient } from "@konstantinbozukov/agent-trust-layer";
 
 export type AtlMiddlewareOptions = {
   client: AtlClient;
@@ -31,7 +31,8 @@ export function createAtlMiddleware(opts: AtlMiddlewareOptions): RequestHandler 
     }
 
     try {
-      const sku = req.path.startsWith("/") ? req.path : `/${req.path}`;
+      const pathOnly = req.originalUrl.split("?")[0] ?? req.path;
+      const sku = pathOnly.startsWith("/") ? pathOnly : `/${pathOnly}`;
       const amountRaw = req.header("x-atl-amount-usd");
       const amountUsd = amountRaw ? Number(amountRaw) : defaultAmount;
       const result = await opts.client.consult({

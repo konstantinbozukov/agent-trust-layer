@@ -9,7 +9,8 @@
     "packages/reference-express"
   ],
   "scripts": {
-    "build": "npm run build -w agent-trust-layer && npm run build -w @agent-trust-layer/reference-express",
+    "build": "npm run build -w @konstantinbozukov/agent-trust-layer && npm run build -w @agent-trust-layer/reference-express",
+    "typecheck": "npm run build",
     "test": "npm run build && node --test tests/compat/*.test.js",
     "compat": "npm test",
     "example:with-atl": "npm run build && node examples/with-atl/index.js"

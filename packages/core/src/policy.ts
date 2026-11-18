@@ -55,9 +55,25 @@ export function normalizeSeller(seller: string): string {
   return seller.trim().replace(/\/$/, "");
 }
 
+/** On-chain settlement id (x402 payment-response); only these raise stub score. */
+export function isScoreableTxHash(txHash: string): boolean {
+  return /^0x[a-fA-F0-9]{64}$/.test(txHash.trim());
+}
+
 export function assertConsultRequest(req: ConsultRequest): void {
-  if (!req.agentId?.trim()) throw new Error("agentId required");
-  if (!req.seller?.trim()) throw new Error("seller required");
+  const agentId = req.agentId?.trim();
+  if (!agentId) throw new Error("agentId required");
+  if (agentId.length > 128) throw new Error("agentId must be at most 128 characters");
+  const seller = req.seller?.trim();
+  if (!seller) throw new Error("seller required");
+  try {
+    const u = new URL(seller);
+    if (!u.protocol.startsWith("http")) {
+      throw new Error("seller must be an absolute http(s) URL");
+    }
+  } catch {
+    throw new Error("seller must be an absolute http(s) URL");
+  }
   if (!req.sku?.trim() || !req.sku.startsWith("/")) {
     throw new Error("sku must be a path starting with /");
   }

@@ -6,7 +6,7 @@ import {
   createAtlClient,
   createMemoryLedger,
   withAtl,
-} from "agent-trust-layer";
+} from "@konstantinbozukov/agent-trust-layer";
 
 const agentId = "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 const seller = "https://signals.edge.report";

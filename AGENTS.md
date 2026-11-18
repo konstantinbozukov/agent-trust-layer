@@ -14,7 +14,7 @@ This repository is a library plus a reference Express middleware. It does not ho
 
 - Node.js `>=20` (`package.json` `engines`). ESM only (`"type": "module"`).
 - TypeScript 5.9.x, compiled with `tsc`. Shared compiler options in `tsconfig.base.json`: `strict`, `NodeNext`, `noUncheckedIndexedAccess`, target ES2022.
-- npm workspaces. Root package name: `agent-trust-layer-monorepo` (private). Publishable package: `agent-trust-layer` in `packages/core`.
+- npm workspaces. Root package name: `agent-trust-layer-monorepo` (private). Publishable package: `@konstantinbozukov/agent-trust-layer` in `packages/core`.
 - Express 5 is a devDependency and peerDependency of `packages/reference-express` only. The core package has no runtime dependencies.
 - Tests use the built-in `node:test` runner. There is no ESLint, Prettier, Jest, or coverage dependency.
 
@@ -24,7 +24,7 @@ This repository is a library plus a reference Express middleware. It does not ho
 package.json              private workspace root (build, test, example scripts)
 tsconfig.base.json
 spec/v0.1.md              protocol
-packages/core/            npm name agent-trust-layer (src + committed dist)
+packages/core/            npm name @konstantinbozukov/agent-trust-layer (src + committed dist)
 packages/reference-express/   @agent-trust-layer/reference-express (src only; dist is gitignored)
 tests/compat/             node:test files + vectors.v0.1.json
 examples/with-atl/        fake paid fetch through withAtl()
@@ -47,12 +47,12 @@ Verified 2026-11-13:
 
 - `npm ci --ignore-scripts` exited 0 (82 packages added). The repo has no `install` or `postinstall` scripts. `prepublishOnly` on `packages/core` runs `tsc` only when publishing.
 - `npm test` exited 0. It runs `npm run build`, then `node --test tests/compat/*.test.js`. Result: 8 passed, 0 failed, 0 skipped (3 suites, about 102 ms).
-- `npm run build` exited 0. It runs `tsc -p tsconfig.json` in `agent-trust-layer` and in `@agent-trust-layer/reference-express`.
+- `npm run build` exited 0. It runs `tsc -p tsconfig.json` in `@konstantinbozukov/agent-trust-layer` and in `@agent-trust-layer/reference-express`.
 - `npm run example:with-atl` exited 0. It rebuilds, then runs `examples/with-atl/index.js` (in-process fake `fetch`, no network).
-- `node examples/node-consult-before-x402/index.js` exited 0 after that build. Run it from the repo root so Node can resolve `agent-trust-layer` from the workspace `node_modules`.
+- `node examples/node-consult-before-x402/index.js` exited 0 after that build. Run it from the repo root so Node can resolve `@konstantinbozukov/agent-trust-layer` from the workspace `node_modules`.
 - `npm run lint` fails: `Missing script: "lint"`. There is no linter config in the tree.
 
-`npm test` always rebuilds first. The compat tests import the package name `agent-trust-layer`, which resolves to `packages/core` and loads `dist/`, so a stale `dist/` would be what the tests execute if you skip the build.
+`npm test` always rebuilds first. The compat tests import `@konstantinbozukov/agent-trust-layer`, which resolves to `packages/core` and loads `dist/`, so a stale `dist/` would be what the tests execute if you skip the build.
 
 There is no watch script and no dev server in this repo.
 
@@ -107,5 +107,5 @@ Keep protocol shape changes in `spec/v0.1.md` and the compat tests together. Shi
 - Do not hand-edit `packages/core/dist`. Rebuild with `npm run build` when `src/` changes and commit the result only as part of a deliberate core change. Consumers install that `dist/`.
 - Do not commit local ledger files such as `atl-ledger.jsonl`. They are payment history. `.gitignore` does not currently ignore `*.jsonl`.
 - There is no database, migration, store config, or production dataset in this repo. Do not add one as a drive-by.
-- Do not retarget `packages/core/package.json` `publishConfig`, the package name, or dependency ranges unless the task is specifically a release. The reference package depends on `agent-trust-layer@0.1.1`, and inside this workspace npm links that to `packages/core`.
+- Do not retarget `packages/core/package.json` `publishConfig`, the package name, or dependency ranges unless the task is specifically a release. The reference package depends on `@konstantinbozukov/agent-trust-layer@0.1.1`, and inside this workspace npm links that to `packages/core`.
 - `signals.edge.report` is a live host outside this repository. Changing this library does not deploy it.

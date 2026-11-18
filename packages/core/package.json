@@ -1,5 +1,5 @@
 {
-  "name": "agent-trust-layer",
+  "name": "@konstantinbozukov/agent-trust-layer",
   "version": "0.1.1",
   "description": "ATL v0.1 — agent trust consult before spend (core + withAtl)",
   "type": "module",

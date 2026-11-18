@@ -1,4 +1,5 @@
 import type { AtlClient } from "./client.js";
+import { isScoreableTxHash } from "./policy.js";
 import type { ConsultResponse, SettlementResponse } from "./types.js";
 
 export type WithAtlOptions = {
@@ -44,7 +45,7 @@ function parseTxHash(res: Response, body: unknown): string {
     const o = body as Record<string, unknown>;
     for (const k of ["transaction", "txHash", "tx"]) {
       const v = o[k];
-      if (typeof v === "string" && v.startsWith("0x")) return v;
+      if (typeof v === "string" && isScoreableTxHash(v)) return v.trim();
     }
   }
   return "";
@@ -95,7 +96,8 @@ export async function withAtl<T = unknown>(
 
   const writeSettlement = async (): Promise<SettlementResponse | null> => {
     if (!response.ok) return null;
-    const txHash = parseTxHash(response, body) || `pending-${Date.now()}`;
+    const verified = parseTxHash(response, body);
+    const txHash = verified || "";
     return opts.client.recordSettlement({
       consultId: consult?.consultId ?? `no-consult-${Date.now()}`,
       agentId: opts.agentId,

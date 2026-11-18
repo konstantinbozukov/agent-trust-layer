@@ -1,6 +1,10 @@
 # Repository audit — 2026-11-13
 
-Auditor notes for Konstantin Bozukov. Documentation only. No application code, config, dependencies, or workflows were changed. Commands ran on Node v22.23.4 and npm 10.9.9. Guesses are marked `TODO: confirm with Konstantin`.
+Auditor notes for Konstantin Bozukov. Commands ran on Node v22.23.4 and npm 10.9.9. Guesses are marked `TODO: confirm with Konstantin`.
+
+## Remediation (2026-11-18, branch `cursor/cleanup-atl-v01-6b8d`)
+
+Addressed in code/docs: scoped npm name `@konstantinbozukov/agent-trust-layer`, README aligned with live `signals.edge.report`, scoreable-only `settlementCount`, `withAtl` no longer mints `pending-*` tx ids, `vectors.v0.1.json` executed in CI, GitHub Actions CI, express middleware SKU uses full path, JSONL corrupt-line skip, consult/settlement validation (agentId length, seller URL, sku path, duplicate scoreable txHash). **Deferred:** `withAtl` blocking on `deny`, seller-side settlement recording, on-chain tx verification, committed `dist/` policy, high_amount threshold after one real settlement.
 
 ## Summary
 
