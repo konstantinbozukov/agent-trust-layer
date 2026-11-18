@@ -1,7 +1,19 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname } from "node:path";
 import type { AtlLedger, LedgerEvent } from "./types.js";
-import { normalizeAgentId } from "./policy.js";
+import { isScoreableTxHash, normalizeAgentId } from "./policy.js";
+
+function scoreableEvent(event: LedgerEvent): boolean {
+  return isScoreableTxHash(event.txHash);
+}
+
+function parseLedgerLine(line: string): LedgerEvent | null {
+  try {
+    return JSON.parse(line) as LedgerEvent;
+  } catch {
+    return null;
+  }
+}
 
 /** In-memory ledger (tests + ephemeral runs). */
 export function createMemoryLedger(
@@ -11,7 +23,7 @@ export function createMemoryLedger(
   return {
     async countSettlements(agentId: string) {
       const id = normalizeAgentId(agentId);
-      return events.filter((e) => e.agentId === id).length;
+      return events.filter((e) => e.agentId === id && scoreableEvent(e)).length;
     },
     async appendSettlement(event: LedgerEvent) {
       events.push({
@@ -38,13 +50,14 @@ export function createJsonlLedger(filePath: string): AtlLedger {
     return text
       .split("\n")
       .filter(Boolean)
-      .map((line) => JSON.parse(line) as LedgerEvent);
+      .map((line) => parseLedgerLine(line))
+      .filter((e): e is LedgerEvent => e !== null);
   }
 
   return {
     async countSettlements(agentId: string) {
       const id = normalizeAgentId(agentId);
-      return load().filter((e) => e.agentId === id).length;
+      return load().filter((e) => e.agentId === id && scoreableEvent(e)).length;
     },
     async appendSettlement(event: LedgerEvent) {
       const row: LedgerEvent = {

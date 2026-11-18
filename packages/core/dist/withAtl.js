@@ -1,3 +1,4 @@
+import { isScoreableTxHash } from "./policy.js";
 function parseTxHash(res, body) {
     const headerTx = res.headers.get("x-payment-response") ||
         res.headers.get("X-PAYMENT-RESPONSE") ||
@@ -9,8 +10,8 @@ function parseTxHash(res, body) {
         const o = body;
         for (const k of ["transaction", "txHash", "tx"]) {
             const v = o[k];
-            if (typeof v === "string" && v.startsWith("0x"))
-                return v;
+            if (typeof v === "string" && isScoreableTxHash(v))
+                return v.trim();
         }
     }
     return "";
@@ -54,7 +55,8 @@ export async function withAtl(fetchImpl, url, opts) {
     const writeSettlement = async () => {
         if (!response.ok)
             return null;
-        const txHash = parseTxHash(response, body) || `pending-${Date.now()}`;
+        const verified = parseTxHash(response, body);
+        const txHash = verified || "";
         return opts.client.recordSettlement({
             consultId: consult?.consultId ?? `no-consult-${Date.now()}`,
             agentId: opts.agentId,

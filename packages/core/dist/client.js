@@ -1,4 +1,4 @@
-import { assertConsultRequest, evaluateStubPolicy, newConsultId, newEventId, normalizeAgentId, normalizeSeller, resolveNetwork, } from "./policy.js";
+import { assertConsultRequest, evaluateStubPolicy, isScoreableTxHash, newConsultId, newEventId, normalizeAgentId, normalizeSeller, resolveNetwork, } from "./policy.js";
 import { ATL_PROTOCOL, ATL_VERSION } from "./types.js";
 function denySet(opts) {
     if (!opts.denyList)
@@ -55,14 +55,32 @@ export function createAtlClient(opts) {
             throw new Error("payer required");
         if (!req.payTo?.trim())
             throw new Error("payTo required");
-        if (!req.sku?.trim())
-            throw new Error("sku required");
+        if (!req.sku?.trim() || !req.sku.startsWith("/")) {
+            throw new Error("sku must be a path starting with /");
+        }
         if (typeof req.txHash !== "string")
             throw new Error("txHash required");
         if (!Number.isFinite(req.amountUsd) || req.amountUsd < 0) {
             throw new Error("amountUsd must be a finite number >= 0");
         }
+        if (req.seller?.trim()) {
+            try {
+                const u = new URL(normalizeSeller(req.seller));
+                if (!u.protocol.startsWith("http")) {
+                    throw new Error("seller must be an absolute http(s) URL");
+                }
+            }
+            catch {
+                throw new Error("seller must be an absolute http(s) URL");
+            }
+        }
         const agentId = normalizeAgentId(req.agentId);
+        if (req.txHash.trim() && isScoreableTxHash(req.txHash)) {
+            const existing = await opts.ledger.listSettlements();
+            if (existing.some((e) => e.txHash === req.txHash.trim())) {
+                throw new Error("duplicate txHash");
+            }
+        }
         const eventId = newEventId();
         await opts.ledger.appendSettlement({
             type: "settlement",

@@ -14,6 +14,8 @@ export type PolicyResult = {
 export declare function evaluateStubPolicy(input: PolicyInput): PolicyResult;
 export declare function normalizeAgentId(agentId: string): string;
 export declare function normalizeSeller(seller: string): string;
+/** On-chain settlement id (x402 payment-response); only these raise stub score. */
+export declare function isScoreableTxHash(txHash: string): boolean;
 export declare function assertConsultRequest(req: ConsultRequest): void;
 export declare function newConsultId(): string;
 export declare function newEventId(): string;

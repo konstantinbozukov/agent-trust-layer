@@ -1,26 +1,27 @@
-# Publish agent-trust-layer to npm
+# Publish `@konstantinbozukov/agent-trust-layer` to npm
 
-Package is ready at `packages/core` as **`agent-trust-layer@0.1.1`**.
+Package lives at `packages/core` as **`@konstantinbozukov/agent-trust-layer@0.1.1`**.
 
-This machine was not logged into npm (`npm whoami` → ENEEDAUTH). One-time:
+The legacy unscoped name `agent-trust-layer` is taken on npm by another maintainer — do **not** publish under that name.
+
+One-time (human operator only; agents must not publish):
 
 ```bash
 npm login
-cd E:\AI\agent-trust-layer\packages\core
+cd packages/core
 npm publish --access public
 ```
 
-Then anywhere:
+Then:
 
 ```bash
-npm i agent-trust-layer
+npm i @konstantinbozukov/agent-trust-layer
 ```
 
-Until then, install from GitHub (dist is committed):
+Until publish, install from GitHub (dist is committed):
 
 ```bash
-npm i "https://github.com/konstantinbozukov/agent-trust-layer/tarball/master"
-# or use the packed file: agent-trust-layer-0.1.1.tgz from packages/core
+npm i "github:konstantinbozukov/agent-trust-layer#path:packages/core"
 ```
 
-Note: `github:…#path:packages/core` is unreliable on some npm versions; prefer npm registry or the tarball URL / local `.tgz`.
+Note: `github:…#path:packages/core` is unreliable on some npm versions; prefer the scoped registry name after publish, or a tarball / local `.tgz`.

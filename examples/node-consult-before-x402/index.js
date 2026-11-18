@@ -8,7 +8,7 @@
 import {
   createAtlClient,
   createMemoryLedger,
-} from "agent-trust-layer";
+} from "@konstantinbozukov/agent-trust-layer";
 
 const AGENT = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const SELLER = "https://signals.edge.report";
@@ -25,7 +25,9 @@ const consult = await atl.consult({
 console.log("consult", consult);
 
 // In production: wrapFetchWithPayment(fetch) → GET seller/v1/gas
-const fakeTx = "0xdeadbeef_example_not_on_chain";
+// 64 hex chars (scoreable shape); still fake / not verified on-chain in this demo.
+const fakeTx =
+  "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef";
 
 const settled = await atl.recordSettlement({
   consultId: consult.consultId,

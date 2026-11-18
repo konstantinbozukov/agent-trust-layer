@@ -9,7 +9,12 @@ import {
   createMemoryLedger,
   ATL_PROTOCOL,
   ATL_VERSION,
-} from "agent-trust-layer";
+} from "@konstantinbozukov/agent-trust-layer";
+
+const TX_A =
+  "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+const TX_B =
+  "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 
 const AGENT_A = "0x1111111111111111111111111111111111111111";
 const AGENT_B = "0x2222222222222222222222222222222222222222";
@@ -80,7 +85,7 @@ describe("ATL v0.1 compat — ledger raises score", () => {
       payer: AGENT_A,
       payTo: "0xe2520f1497ee47645072a6214304807bc3340d58",
       amountUsd: 0.001,
-      txHash: "0xaaa",
+      txHash: TX_A,
       sku: "/v1/gas",
       seller: SELLER,
     });
@@ -100,7 +105,7 @@ describe("ATL v0.1 compat — ledger raises score", () => {
       payer: AGENT_A,
       payTo: "0xe2520f1497ee47645072a6214304807bc3340d58",
       amountUsd: 0.001,
-      txHash: "0xbbb",
+      txHash: TX_B,
       sku: "/v1/gas",
       seller: SELLER,
     });
