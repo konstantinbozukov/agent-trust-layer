@@ -1,6 +1,6 @@
 # Agent Trust Layer — agent guide
 
-This file is for Cursor agents working in `konstantinbozukov/agent-trust-layer`. It describes the tree as it was on 2026-11-13. Commands below were run on Node v22.23.4 and npm 10.9.9 unless noted. Guesses are marked `TODO: confirm with Konstantin`.
+This file is for Cursor agents working in `konstantinbozukov/agent-trust-layer`. It describes the tree as it was on 2026-11-20. Commands below were run on Node v22.23.4 and npm 10.9.9 unless noted. Guesses are marked `TODO: confirm with Konstantin`.
 
 ## What this is
 
@@ -43,10 +43,10 @@ npm ci
 npm test
 ```
 
-Verified 2026-11-13:
+Verified 2026-11-20 (re-run after doc refresh):
 
-- `npm ci --ignore-scripts` exited 0 (82 packages added). The repo has no `install` or `postinstall` scripts. `prepublishOnly` on `packages/core` runs `tsc` only when publishing.
-- `npm test` exited 0. It runs `npm run build`, then `node --test tests/compat/*.test.js`. Result: 8 passed, 0 failed, 0 skipped (3 suites, about 102 ms).
+- `npm ci --ignore-scripts` exited 0. The repo has no `install` or `postinstall` scripts. `prepublishOnly` on `packages/core` runs `tsc` only when publishing.
+- `npm test` exited 0. It runs `npm run build`, then `node --test tests/compat/*.test.js`. Result: 8 passed, 0 failed, 0 skipped (3 suites).
 - `npm run build` exited 0. It runs `tsc -p tsconfig.json` in `@konstantinbozukov/agent-trust-layer` and in `@agent-trust-layer/reference-express`.
 - `npm run example:with-atl` exited 0. It rebuilds, then runs `examples/with-atl/index.js` (in-process fake `fetch`, no network).
 - `node examples/node-consult-before-x402/index.js` exited 0 after that build. Run it from the repo root so Node can resolve `@konstantinbozukov/agent-trust-layer` from the workspace `node_modules`.
@@ -60,21 +60,21 @@ There is no watch script and no dev server in this repo.
 
 Nothing in this repo deploys automatically.
 
-- No `.github/` workflows (GitHub contents API returned 404 for `.github` on 2026-11-13). No releases. No Dockerfile, `vercel.json`, or other hosting config.
-- Intended publish path, from [`docs/PUBLISH.md`](docs/PUBLISH.md): `npm login`, then `npm publish --access public` inside `packages/core`. `prepublishOnly` runs the TypeScript build. `publishConfig.access` is `public`.
-- `packages/core/dist` is committed (see `.gitignore`) so a git install can resolve `exports` without a local compile. A fresh `tsc` 5.9.3 build on 2026-11-13 produced no diff in that directory.
+- CI: `.github/workflows/ci.yml` runs `npm ci --ignore-scripts` and `npm test` on push/PR to `master`/`main` (Node 22 on ubuntu-latest).
+- `@konstantinbozukov/agent-trust-layer@0.1.1` is published on the public npm registry. The unscoped name `agent-trust-layer` remains a different project (see `docs/AUDIT.md`). Do not publish from an agent session.
+- Further releases: [`docs/PUBLISH.md`](docs/PUBLISH.md) — `npm login`, then `npm publish --access public` inside `packages/core`. `prepublishOnly` runs the TypeScript build. `publishConfig.access` is `public`.
+- `packages/core/dist` is committed (see `.gitignore`) so a git install can resolve `exports` without a local compile.
 - `@agent-trust-layer/reference-express` is not on the npm registry (`npm view` returned 404). Its `dist/` is gitignored.
-
-Do not publish from an agent session. The unscoped name `agent-trust-layer` on the public registry is a different project (see `docs/AUDIT.md`). `TODO: confirm with Konstantin` which package name he wants before any publish.
+- No releases workflow. No Dockerfile, `vercel.json`, or other hosting config.
 
 ## External services
 
-Checked from this repo and from public endpoints on 2026-11-13. This code does not call them itself. `withAtl` calls whatever `fetch` the integrator passes in.
+Checked from this repo and from public endpoints on 2026-11-19. This code does not call them itself. `withAtl` calls whatever `fetch` the integrator passes in.
 
 | Service | Role |
 |---|---|
-| npm registry | Intended distribution of `packages/core`. The name `agent-trust-layer` currently resolves to `github.com/kauf3r/agent-trust-layer` @ `0.1.0` (published 2026-01-04), a different codebase. This repo's `0.1.1` is not the registry version. |
-| `https://signals.edge.report` | Documented reference seller (Edge Signals). `GET /` returned 200 HTML titled Edge Signals, Express behind Caddy. `GET /v1/gas` returned 402 with a `payment-required` header. `GET /v1/atl/health` and `POST /v1/atl/consult` returned 404. Sending `X-ATL-Agent-Id` on `GET /v1/gas` did not add `X-ATL-*` response headers. |
+| npm registry | `@konstantinbozukov/agent-trust-layer@0.1.1` is on the public registry. The unscoped name `agent-trust-layer` resolves to `github.com/kauf3r/agent-trust-layer` @ `0.1.0` (published 2026-01-04), a different codebase. |
+| `https://signals.edge.report` | Documented reference seller (Edge Signals). `GET /v1/atl/health` → 200 (`protocol: atl`, `version: 0.1.0`). `GET /v1/gas` without ATL header → 402 + `payment-required`, no `X-ATL-*`. With `X-ATL-Agent-Id` → 402 plus `X-ATL-Verdict` / `X-ATL-Score` / `X-ATL-Consult-Id`. `POST /v1/atl/consult` → 200 JSON. Soft headers also on `/v1/token-risk`. No-wallet demo: [atl-x402-starter](https://github.com/konstantinbozukov/atl-x402-starter). |
 | Base (`eip155:8453`) | Default `network` in the spec and in `DEFAULT_NETWORK`. No chain SDK, RPC URL, or wallet code is in this repo. |
 
 No Supabase, Vercel, or AWS client or config is in the tree.
